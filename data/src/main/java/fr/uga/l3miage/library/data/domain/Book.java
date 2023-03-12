@@ -1,21 +1,34 @@
 package fr.uga.l3miage.library.data.domain;
 
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
+@Entity
+@Table(name= "book")
+@NamedQueries({
+        @NamedQuery(name = "all-books", query = "SELECT b FROM Book b ORDER BY title"),
+        @NamedQuery(name = "find-books-by-title", query = "SELECT b FROM Book b WHERE LOWER(b.title) LIKE CONCAT('%', LOWER(:titlePart), '%')"),
+        @NamedQuery(name = "find-books-by-author-and-title", query = "SELECT b FROM Book b JOIN b.authors a WHERE a.id = :authorId and LOWER(b.title) LIKE CONCAT('%', LOWER(:titlePart), '%')"),
+        @NamedQuery(name="find-books-by-authors-name", query="SELECT b FROM Book b JOIN b.authors a WHERE LOWER(a.fullName) LIKE CONCAT('%', LOWER(:namePart), '%')"),
+        @NamedQuery(name="find-books-by-several-authors", query="SELECT b FROM Book b WHERE SIZE(b.authors) > :count")
+})
 public class Book {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String title;
+    @Column(name="isbn", nullable = false, unique = true)
     private long isbn;
+    @Column(name="publisher", nullable = false)
     private String publisher;
+    @Column(name="`year`", nullable = false)
     private short year;
+    @Enumerated(EnumType.STRING)
     private Language language;
-
-    @Transient
+    @ManyToMany(mappedBy = "books")
     private Set<Author> authors;
 
     public Long getId() {

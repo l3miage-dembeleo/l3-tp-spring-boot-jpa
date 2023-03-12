@@ -49,9 +49,8 @@ public class BookRepository implements CRUDRepository<Long, Book> {
      * @return une liste de livres
      */
     public List<Book> findByContainingTitle(String titlePart) {
-        // TODO créer les named query
         return entityManager.createNamedQuery("find-books-by-title", Book.class)
-                // TODO completer l'appel pour utiliser le paramètre de cette méthode
+                .setParameter("titlePart", titlePart)
                 .getResultList();
     }
 
@@ -62,9 +61,9 @@ public class BookRepository implements CRUDRepository<Long, Book> {
      * @return une liste de livres
      */
     public List<Book> findByAuthorIdAndContainingTitle(Long authorId, String titlePart) {
-        // TODO créer les named query
         return entityManager.createNamedQuery("find-books-by-author-and-title", Book.class)
-                // TODO completer l'appel pour utiliser les paramètres de cette méthode
+                .setParameter("authorId", authorId)
+                .setParameter("titlePart", titlePart )
                 .getResultList();
     }
 
@@ -74,9 +73,8 @@ public class BookRepository implements CRUDRepository<Long, Book> {
      * @return une liste de livres
      */
     public List<Book> findBooksByAuthorContainingName(String namePart) {
-        // TODO créer les named query
         return entityManager.createNamedQuery("find-books-by-authors-name", Book.class)
-                // TODO completer l'appel pour utiliser le paramètre de cette méthode
+                .setParameter("namePart", namePart)
                 .getResultList();
     }
 
@@ -88,8 +86,9 @@ public class BookRepository implements CRUDRepository<Long, Book> {
     public List<Book> findBooksHavingAuthorCountGreaterThan(int count) {
         // TODO créer les named query
         return entityManager.createNamedQuery("find-books-by-several-authors", Book.class)
-                // TODO completer l'appel pour utiliser le paramètre de cette méthode
+                .setParameter("count", count)
                 .getResultList();
     }
 
 }
+

@@ -1,10 +1,18 @@
 package fr.uga.l3miage.library.data.domain;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.Objects;
 
 // Attention le mot 'user' est reservé
+@Entity
+@Table(name = "`user`")
+@NamedQueries({
+        @NamedQuery(name = "findAllOlderThan", query = "SELECT u FROM User u WHERE FUNCTION('YEAR', CURRENT_DATE) - FUNCTION('YEAR', u.birth) > :age")
+})
 public class User extends Person {
+    @Temporal(TemporalType.DATE)
     private Date registered;
     private float lateRatio;
 
@@ -37,3 +45,4 @@ public class User extends Person {
         return Objects.hash(super.hashCode(), registered, lateRatio);
     }
 }
+

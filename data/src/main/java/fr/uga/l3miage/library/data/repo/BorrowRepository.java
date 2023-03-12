@@ -1,10 +1,14 @@
 package fr.uga.l3miage.library.data.repo;
 
+import fr.uga.l3miage.library.data.domain.Book;
 import fr.uga.l3miage.library.data.domain.Borrow;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -37,7 +41,6 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
     public List<Borrow> all() {
         return entityManager.createQuery("from Borrow", Borrow.class).getResultList();
     }
-
     /**
      * Trouver des emprunts en cours pour un emprunteur donné
      *
@@ -45,8 +48,10 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return la liste des emprunts en cours
      */
     public List<Borrow> findInProgressByUser(String userId) {
-        // TODO
-        return null;
+        List<Borrow> l = entityManager.createNamedQuery("current-borrowed-books-by-user", Borrow.class)
+                .setParameter("userId", userId)
+                .getResultList();
+        return l;
     }
 
     /**
@@ -56,8 +61,17 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return le nombre de livre
      */
     public int countBorrowedBooksByUser(String userId) {
-        // TODO
-        return 0;
+        List<Book> borrowedBooks = new ArrayList<>();
+        List<Borrow> borrows = entityManager.createNamedQuery("find_in_progress_by_user", Borrow.class)
+                .setParameter("userId", userId)
+                .getResultList();
+
+        for (Borrow borrow : borrows) {
+            for (Book b : borrow.getBooks()){
+                borrowedBooks.add(b);
+            }
+        }
+        return borrowedBooks.size();
     }
 
     /**
@@ -67,8 +81,17 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return le nombre de livre
      */
     public int countCurrentBorrowedBooksByUser(String userId) {
-        // TODO
-        return 0;
+        List<Book> borrowedBooks = new ArrayList<>();
+        List<Borrow> borrows = entityManager.createNamedQuery("current-borrowed-books-by-user", Borrow.class)
+                .setParameter("userId", userId)
+                .getResultList();
+
+        for (Borrow borrow : borrows) {
+            for (Book b : borrow.getBooks()){
+                borrowedBooks.add(b);
+            }
+        }
+        return borrowedBooks.size();
     }
 
     /**
@@ -77,8 +100,9 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return la liste des emprunt en retard
      */
     public List<Borrow> foundAllLateBorrow() {
-        // TODO
-        return null;
+        List<Borrow> borrows = entityManager.createNamedQuery("found-all-late-borrow", Borrow.class)
+                .getResultList();
+        return borrows;
     }
 
     /**
@@ -88,8 +112,16 @@ public class BorrowRepository implements CRUDRepository<String, Borrow> {
      * @return les emprunt qui sont bientôt en retard
      */
     public List<Borrow> findAllBorrowThatWillLateWithin(int days) {
-        // TODO
-        return null;
+        Date currentDate = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(currentDate);
+        cal.add(Calendar.DATE, days);
+        Date dateLate = cal.getTime();
+        List<Borrow> borrows = entityManager.createNamedQuery("found-All-borrow-that-will-late-within", Borrow.class)
+                .setParameter("dateLate", dateLate)
+                .getResultList();
+        return borrows;
     }
 
 }
+

@@ -52,8 +52,10 @@ public class AuthorRepository implements CRUDRepository<Long, Author> {
      * @return une liste d'auteurs trié par nom
      */
     public List<Author> searchByName(String namePart) {
-        // TODO
-        return null;
+        List<Author> res = entityManager.createNamedQuery("findByName", Author.class)
+                .setParameter("namePart", "%" + namePart + "%")
+                .getResultList();
+        return res;
     }
 
     /**
@@ -62,8 +64,13 @@ public class AuthorRepository implements CRUDRepository<Long, Author> {
      * @return true si l'auteur partage
      */
     public boolean checkAuthorByIdHavingCoAuthoredBooks(long authorId) {
-        // TODO
-        return false;
+        List<Author> res = entityManager.createNamedQuery("isAuthorByIdHavingCoAuthoredBooks", Author.class)
+                .setParameter("authorId", authorId)
+                .getResultList();
+        if (res.size() == 1){
+            return true;
+        }else{
+            return false;
+        }
     }
-
 }

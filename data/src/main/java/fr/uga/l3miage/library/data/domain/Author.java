@@ -1,14 +1,32 @@
 package fr.uga.l3miage.library.data.domain;
 
+
+
+import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 
+@Entity
+@Table(name= "author")
+@NamedQueries({
+        @NamedQuery(name = "all-authors", query = "SELECT fullName FROM Author ORDER BY fullName ASC"),
+        @NamedQuery(name = "findByName", query = "SELECT a FROM Author a WHERE a.fullName LIKE :namePart"),
+        @NamedQuery(name = "isAuthorByIdHavingCoAuthoredBooks", query = "SELECT DISTINCT a FROM Author a JOIN a.books boo JOIN boo.authors aux WHERE a.id = :authorId AND aux.id != a.id")
+})
 public class Author {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name="fullName", nullable = false)
     private String fullName;
+
+    @ManyToMany
+    @JoinTable(name = "author_book",
+            joinColumns = @JoinColumn(name = "author_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id"))
     private Set<Book> books;
 
     public Long getId() {
@@ -55,3 +73,4 @@ public class Author {
         return Objects.hash(fullName);
     }
 }
+

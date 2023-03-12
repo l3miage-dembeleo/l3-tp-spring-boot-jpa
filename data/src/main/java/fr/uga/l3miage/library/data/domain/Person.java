@@ -1,14 +1,23 @@
 package fr.uga.l3miage.library.data.domain;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.Objects;
-
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Person {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
+    @Enumerated(EnumType.STRING)
     private Gender gender;
+
     private String firstName;
+
     private String lastName;
+    @Temporal(TemporalType.DATE)
     private Date birth;
 
     public enum Gender {
@@ -64,3 +73,4 @@ public abstract class Person {
         return Objects.hash(gender, firstName, lastName, birth);
     }
 }
+
